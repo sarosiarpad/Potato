@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Potato</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="background"></div>
+    <div id="container">
+        <div id="game">
+            <h1>Burgonya térkép</h1>
+            <table id="gamefield">
+
+            </table>
+        </div>
+
+        <div id="datas">
+            <section id="Seasons">
+                <div id="seasons">
+                    <div id="spring"></div>
+                    <div id="summer"></div>
+                    <div id="fall"></div>
+                    <div id="winter"></div>
+                </div>
+                <div id="score"></div>
+            </section>
+            <section id="other">
+                <div id="currentSeason"></div>
+                <div id="missions">
+                    <div class="missionsRow">
+                        <div class="mission">
+                            <p>A</p>
+                        </div>
+                        <div class="mission">
+                            <p>B</p>
+                        </div>
+                    </div>
+                    <div class="missionsRow">
+                        <div class="mission">
+                            <p>C</p>
+                        </div>
+                        <div class="mission">
+                            <p>D</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="seasonTimer"></div>
+                <div id="newElement">
+                    <div>
+                        Lehelyezendő elem:
+                        <div id="buttons">
+                            <button id="turn">Forgatás</button>
+                            <button id="mirror">Tükrözés</button>
+                        </div>
+                    </div>
+                    <div>
+                        <div id="timeCost"></div>
+                        <table id="element"></table>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script type="module" src="script.js"></script>
+</body>
+</html>
