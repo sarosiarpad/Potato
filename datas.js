@@ -1,21 +1,21 @@
 export const missions = 
 {
-  "basic": [
+  basic: [
     {
-      "title": "Az erdő széle",
-      "description": "A térképed szélével szomszédos erdőmezőidért egy-egy pontot kapsz."
+      title: "Az erdő széle",
+      description: "A térképed szélével szomszédos erdőmezőidért egy-egy pontot kapsz."
     },
     {
-      "title": "Álmos-völgy",
-      "description": "Minden olyan sorért, amelyben három erdőmező van, négy-négy pontot kapsz."
+      title: "Álmos-völgy",
+      description: "Minden olyan sorért, amelyben három erdőmező van, négy-négy pontot kapsz."
     },
     {
-      "title": "Krumpliöntözés",
-      "description": "A farmmezőiddel szomszédos vízmezőidért két-két pontot kapsz."
+      title: "Krumpliöntözés",
+      description: "A farmmezőiddel szomszédos vízmezőidért két-két pontot kapsz."
     },
     {
-      "title": "Határvidék",
-      "description": "Minden teli sorért vagy oszlopért 6-6 pontot kapsz."
+      title: "Határvidék",
+      description: "Minden teli sorért vagy oszlopért 6-6 pontot kapsz."
     }
   ],
   "extra": [

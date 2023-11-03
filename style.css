@@ -9,6 +9,14 @@ body{
     justify-content: center;
     gap: 1rem;
 }
+
+#game{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
 #gamefield{
     border: 8px solid white;
     border-radius: 5px;
@@ -19,6 +27,23 @@ body{
     background-color: rgb(247, 223, 147);
     border-radius: 5px;
     cursor: pointer;
+}
+.hideEndGame {
+    display: none;
+}
+.showEndGame{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: black;
+    border-radius: 10px;
+    color: white;
+    width: 13rem;
+    height: 10rem;
 }
 
 #datas{
@@ -139,7 +164,6 @@ button{
     cursor: pointer;
 }
 
-button:active{
-    height: 3rem;
-    width: 6.3rem;
+.endGameTable{
+    filter: blur(10px);
 }

@@ -1,14 +1,16 @@
 import {missions, elements} from './datas.js';
 
-export function calculateBasic(matrix, title, seasonScore){
+export function calculateBasic(matrix, title){
+    let seasonScore = 0;
     if(title == "Az erdő széle"){
         for(let i = 0; i < 11; i++){
             for(let j = 0; j < 11; j++){
-                if(matrix[i][j] == 3 && i == 0 || i == 10 || j == 0 || j == 10){
+                if(matrix[i][j] == 3 && (i === 0 || i === 10 || j === 0 || j === 10)){
                     seasonScore++;
                 }
             }
         }
+        return seasonScore;
     }
     else if(title == "Álmos-völgy"){
         for(let i = 0; i < 11; i++){
@@ -22,17 +24,18 @@ export function calculateBasic(matrix, title, seasonScore){
                 seasonScore += 4;
             }
         }
+        return seasonScore;
     }
     else if(title == "Krumpliöntözés"){
-        const neighbor = [[-1, 1], [0, 1], [1, 1], [0, -1], [0, 1], [-1, -1], [-1, 0], [-1, 1]];
+        const neighbor = [[-1, 0], [1, 0], [0, -1], [0, 1]];
         for(let i = 0; i < 11; i++){
             for(let j = 1; j < 10; j++){
                 if(matrix[i][j] == 4){
-                    neightbor.forEach(element => {
-                        let newI = i + neighbor[0];
-                        let newJ = j + neighbor[1];
+                    neighbor.forEach(coord => {
+                        let newI = i + coord[0];
+                        let newJ = j + coord[1];
                         if(newI >= 0 && newI < 11 && newJ >= 0 && newJ < 11){
-                            if(matrix[i + element[0]][j + element[1]] == 2){
+                            if(matrix[newI][newJ] == 2){
                                 seasonScore += 2;
                             }
                         }
@@ -40,6 +43,7 @@ export function calculateBasic(matrix, title, seasonScore){
                 }
             }
         }
+        return seasonScore;
     }
     else if(title = "Határvidék"){
         for(let i = 0; i < 11; i++){
@@ -60,7 +64,7 @@ export function calculateBasic(matrix, title, seasonScore){
                 seasonScore += 6;
             }
         }
-
+        return seasonScore;
     }
 }
 

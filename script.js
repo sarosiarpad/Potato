@@ -16,6 +16,8 @@ const currentSeason = document.querySelector('#currentSeason');
 const seasonTimer = document.querySelector('#seasonTimer');
 const turnButton = document.querySelector('#turn');
 const mirrorButton = document.querySelector('#mirror');
+const restartButton = document.querySelector('#restart');
+const endGameDiv = document.getElementById('endGame');
 
 const mountains = [[2,2], [4,9], [6,4], [9,10], [10,6]];
 const seasons = ['Tavasz (AB)', 'Nyár (BC)', 'Ősz (CD)', 'Tél (DA)'];
@@ -30,8 +32,10 @@ let springScore = 0;
 let summerScore = 0;
 let fallScore = 0;
 let winterScore = 0;
+let running;
 
 function start(matrix){
+    endGameDiv.classList.add('hideEndGame');
     for(let i = 0; i < 11; i++){
         let row = Array.from({length: 11}, () => 0);
         matrix.push(row);
@@ -54,9 +58,10 @@ function start(matrix){
     let remainingTime = 7- (timer % 7);
     seasonTimer.textContent = `Évszakból hátralévő idő: ${remainingTime}/7`;
 
+    running = true;
     nextElement();
     initGame(matrix);
-    tryPlaceElement();
+    placeElement();
 }
 
 function initGame(matrix){
@@ -177,12 +182,21 @@ function validate(x, y, matrix){
     );
 }
 
-function tryPlaceElement() {
-    delegate(gamefield, 'mouseover', 'td', (event) => {
+function placeElement() {
+    delegate(gamefield, 'mouseover', 'td', handleMouseOver);
+    delegate(gamefield, 'click', 'td', handleClick);
+    delegate(gamefield, 'mouseout', 'td', handleMouseOut)
+}
+
+let entered = false;
+let canPlace;
+function handleMouseOver(event){
+    if(!entered && running){
+        entered = true;
+        canPlace = true;
         let row = event.target.parentNode.rowIndex;
         let column = event.target.cellIndex;
-        let canPlace = true;
-
+    
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
                 if (randomElement.shape[i][j] != 0) {
@@ -196,9 +210,9 @@ function tryPlaceElement() {
                 }
             }
         }
-
+    
         tempMatrix = JSON.parse(JSON.stringify(matrix));
-            
+                
         if(canPlace){
             let num;
             switch(randomElement.type){
@@ -218,7 +232,7 @@ function tryPlaceElement() {
                     console.log('Error');
                     break;
             }
-
+    
             for(let i = 0; i < 3; i++){
                 for(let j = 0; j < 3; j++){
                     if(randomElement.shape[i][j] != 0){
@@ -230,41 +244,49 @@ function tryPlaceElement() {
         } else {
             initGame(matrix);
         }
-    });
+    }
 }
 
-function placeElement(){
-    delegate(gamefield, 'click', 'td', () => {
+function handleMouseOut(){
+    entered = false;
+}
+
+function handleClick() {
+    if(canPlace && running){
+        entered = false;
         matrix = JSON.parse(JSON.stringify(tempMatrix));
+        timer += randomElement.time;
         initGame(matrix);
         setSeason();
-    });
+        checkEnd();
+    }
 }
+
 
 function setSeason(){
     let currentSeasonIndex = Math.floor(timer / 7) % 4;
     if(currentSeason.textContent != 'Jelenlegi évszak: ' + seasons[currentSeasonIndex]){
-        if(currentSeasonIndex == 0){
-            calculateBasic(matrix, selectedMissions[0].title, springScore);
-            calculateBasic(matrix, selectedMissions[1].title, springScore);
+        if(currentSeasonIndex == 1){
+            springScore += calculateBasic(matrix, selectedMissions[0].title);
+            springScore += calculateBasic(matrix, selectedMissions[1].title);
             score += springScore
             document.querySelector('#spring').innerHTML = 'Tavasz:<br>' + springScore + " pont";
         }
-        else if(currentSeasonIndex == 1){
-            calculateBasic(matrix, selectedMissions[1].title, summerScore);
-            calculateBasic(matrix, selectedMissions[2].title, summerScore);
+        else if(currentSeasonIndex == 2){
+            summerScore += calculateBasic(matrix, selectedMissions[1].title);
+            summerScore += calculateBasic(matrix, selectedMissions[2].title);
             score += summerScore
             document.querySelector('#summer').innerHTML = 'Nyár:<br>' + summerScore + " pont";
         }
-        else if(currentSeasonIndex == 2){
-            calculateBasic(matrix, selectedMissions[2].title, fallScore);
-            calculateBasic(matrix, selectedMissions[3].title, fallScore);
+        else if(currentSeasonIndex == 3){
+            fallScore += calculateBasic(matrix, selectedMissions[2].title);
+            fallScore += calculateBasic(matrix, selectedMissions[3].title);
             score += fallScore
             document.querySelector('#fall').innerHTML = 'Ősz:<br>' + fallScore + " pont";
         }
-        else if(currentSeasonIndex == 3){
-            calculateBasic(matrix, selectedMissions[3].title, winterScore);
-            calculateBasic(matrix, selectedMissions[0].title, winterScore);
+        else if(currentSeasonIndex == 0){
+            winterScore += calculateBasic(matrix, selectedMissions[3].title);
+            winterScore += calculateBasic(matrix, selectedMissions[0].title);
             score += winterScore
             document.querySelector('#winter').innerHTML = 'Tél:<br>' + winterScore + " pont";
         }
@@ -272,8 +294,28 @@ function setSeason(){
         document.querySelector('#score').innerHTML = 'Összesen: ' + score + ' pont';
     }
 
-    let remainingTime = 7- (timer % 7);
+    let remainingTime = 7 - (timer % 7);
     seasonTimer.textContent = `Évszakból hátralévő idő: ${remainingTime}/7`;
 }
+
+function checkEnd(){
+    if(timer >= 28){
+        const cells = gamefield.querySelectorAll('td');
+        const cellsArray = Array.from(cells);
+        for(let i = 0; i < cellsArray.length; i++){
+            cells[i].style.cursor = 'default';
+        }
+        gamefield.style.filter = 'blur(10px)';
+        endGameDiv.classList.add('showEndGame');
+        running = false;
+
+        restartButton.addEventListener('click', () => {
+            location.reload();
+        })
+    } else {
+        nextElement();
+    }
+}
+
 
 start(matrix);
