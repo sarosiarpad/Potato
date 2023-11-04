@@ -10,13 +10,13 @@ body{
     gap: 1rem;
 }
 
-#game{
-    position: relative;
+#game, #datas{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
+
 #gamefield{
     border: 8px solid white;
     border-radius: 5px;
@@ -28,6 +28,7 @@ body{
     border-radius: 5px;
     cursor: pointer;
 }
+
 .hideEndGame {
     display: none;
 }
@@ -50,10 +51,11 @@ body{
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 3rem;
 }
 
-#Seasons{
+#scoreBoard{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -108,26 +110,43 @@ body{
 #missions{
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1em;
 }
 .missionsRow{
     display: flex;
     flex-direction: row;
-    gap: 1rem;
+    gap: 1em;
 }
 .mission{
-    position: relative;
+    display: flex;
+    flex-direction: column;
     width: 20rem;
     height: 7rem;
     background-color: rgb(31, 30, 30);
     border-radius: 10px;
+    justify-content: space-evenly;
 }
-.mission p{
-    position: absolute;
-    margin-right: 5px;
-    right: 0;
-    bottom: 0;
+.mission .title{
     color: white;
+    font-size: 1.2rem;
+    margin: 0px;
+    margin-left: 5px;
+}
+.mission .description{
+    color: white;
+    font-size: 0.8rem;
+    margin: 0px;
+    margin-left: 5px;
+}
+.mission .missionScore{
+    color: white;
+    font-size: 1rem;
+    margin: 0px;
+    margin-right: 5px;
+    align-self: flex-end;
+}
+.activeMission{
+    border: 5px solid rgb(19, 206, 19);
 }
 
 #element td{
@@ -148,6 +167,19 @@ body{
     font-weight: bold;
 
 }
+#nextElementTable{
+    background-color: rgba(255, 255, 255, 0.753);
+    width: 15rem;
+    border-radius: 10px;
+}
+#nextElementTable #timeCost{
+    align-self: flex-end;
+    margin-top: 10px;
+    margin-right: 10px;
+}
+#nextElementTable #element{
+    align-self: center;
+}
 
 #buttons{
     display: flex;
@@ -156,6 +188,7 @@ body{
     align-items: end;
 }
 button{
+    background-color: rgba(255, 255, 255, 0.753);
     height: 3.5rem;
     width: 7rem;
     border-radius: 15px;
@@ -166,4 +199,96 @@ button{
 
 .endGameTable{
     filter: blur(10px);
+}
+
+@media screen and (max-width: 1280px) {
+    #gamefield td {
+        width: 3rem;
+        height: 3rem;
+    }
+    #element td{
+        width: 3rem;
+        height: 3rem;
+    }
+    #nextElementTable{
+        width: 12rem;
+    }
+    #datas{
+        gap: 1rem;
+    }
+    #seasons div{
+        height: 4rem;
+        width: 4rem;
+        font-size: 0.9rem;
+    }
+    #score{
+        font-size: 1rem;;
+    }
+    .mission{
+        width: 15rem;
+        height: 6rem;
+    }
+    .mission .title{
+        font-size: 1rem;
+    }
+    .mission .description{
+        font-size: 0.6rem;
+    }
+    .mission .missionScore{
+        font-size: 0.8rem;
+    }
+    button{
+        height: 3rem;
+        width: 6rem;
+        font-size: 1rem;
+    }
+    #newElement>div{
+        font-size: 1rem;
+    }
+    #currentSeason, #seasonTimer{
+        font-size: 1.2rem;
+    }
+}
+
+@media screen and (max-width: 1024px){
+    #gamefield td {
+        width: 2rem;
+        height: 2rem;
+    }
+    #element td{
+        width: 2rem;
+        height: 2rem;
+    }
+    #datas{
+        gap: 1rem;
+    }
+    #seasons div{
+        height: 3rem;
+        width: 3rem;
+        font-size: 0.8rem;
+    }
+    .mission{
+        width: 12rem;
+        height: 4rem;
+    }
+    .mission .title{
+        font-size: 0.8rem;
+    }
+    .mission .description{
+        font-size: 0.5rem;
+    }
+    .mission .missionScore{
+        font-size: 0.6rem;
+    }
+    button{
+        height: 2rem;
+        width: 5rem;
+        font-size: 0.8rem;
+    }
+    #newElement>div{
+        font-size: 0.8rem;
+    }
+    #currentSeason, #seasonTimer{
+        font-size: 1rem;
+    }
 }

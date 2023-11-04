@@ -1,4 +1,4 @@
-import {missions, elements} from './datas.js';
+import {missionsData} from './datas.js';
 
 export function calculateBasic(matrix, title){
     let seasonScore = 0;

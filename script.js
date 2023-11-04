@@ -1,4 +1,4 @@
-import { missions, elements } from './datas.js';
+import { missionsData, elements } from './datas.js';
 import { calculateBasic } from './missions.js';
 
 /*
@@ -12,56 +12,117 @@ import { calculateBasic } from './missions.js';
 
 const gamefield = document.querySelector('#gamefield');
 const nextElementTable = document.querySelector('#element');
+const cells = gamefield.querySelectorAll('td');
+const cellsArray = Array.from(cells);
+
 const currentSeason = document.querySelector('#currentSeason');
 const seasonTimer = document.querySelector('#seasonTimer');
+
 const turnButton = document.querySelector('#turn');
 const mirrorButton = document.querySelector('#mirror');
 const restartButton = document.querySelector('#restart');
+
 const endGameDiv = document.getElementById('endGame');
+
+const missions = document.querySelectorAll('.mission');
 
 const mountains = [[2,2], [4,9], [6,4], [9,10], [10,6]];
 const seasons = ['Tavasz (AB)', 'Nyár (BC)', 'Ősz (CD)', 'Tél (DA)'];
-let selectedMissions = [];
 
 let matrix = [];
 let tempMatrix = [];
+let selectedMissions = [];
+
 let randomElement;
-let timer = 0;
+let timer;
+
 let score = 0;
 let springScore = 0;
 let summerScore = 0;
 let fallScore = 0;
 let winterScore = 0;
 let running;
+let entered = false;
+let canPlace;
 
-function start(matrix){
+
+function start(){
+    running = true;
+    setScores();
+
+    for(let i = 0; i < cellsArray.length; i++){
+        cells[i].style.cursor = 'pointer';
+    }
+    gamefield.style.filter = 'blur(0px)';
+    endGameDiv.classList.remove('showEndGame');
     endGameDiv.classList.add('hideEndGame');
-    for(let i = 0; i < 11; i++){
-        let row = Array.from({length: 11}, () => 0);
-        matrix.push(row);
-    }
-    mountains.forEach((coord) =>{
-        matrix[coord[0]-1][coord[1]-1] = 1;
+
+    missionsData.basic.forEach((mission) => {
+        selectedMissions.push(mission);
     });
+    
+    matrix = initMatrix();
+    tempMatrix = [];
+    initMissions();
+    initGame(matrix);
+    initSeasons();
 
-    for(let i = 0; i < 4; i++){
-        selectedMissions.push(missions.basic[i]);
-    }
+    timer = 0;
+    let remainingTime = 7- (timer % 7);
+    seasonTimer.textContent = `Évszakból hátralévő idő: ${remainingTime}/7`;
 
+    nextElement();
+
+    setActiveMissions(seasons[0]);
+
+    placeElement(matrix, tempMatrix, randomElement, timer);
+}
+
+function initSeasons(){
     currentSeason.textContent = 'Jelenlegi évszak: ' + seasons[0];
     document.querySelector('#spring').innerHTML = 'Tavasz:<br>' + 0 + " pont";
     document.querySelector('#summer').innerHTML = 'Nyár:<br>' + 0 + " pont";
     document.querySelector('#fall').innerHTML = 'Ősz:<br>' + 0 + " pont";
     document.querySelector('#winter').innerHTML = 'Tél:<br>' + 0 + " pont";
     document.querySelector('#score').innerHTML = 'Összesen: ' + score + ' pont';
+}
 
-    let remainingTime = 7- (timer % 7);
-    seasonTimer.textContent = `Évszakból hátralévő idő: ${remainingTime}/7`;
+function initMatrix(){
+    let matrix = new Array(11).fill(0).map(() => new Array(11).fill(0));
+    mountains.forEach((coord) => {
+        matrix[coord[0]-1][coord[1]-1] = 1;
+    })
 
-    running = true;
-    nextElement();
-    initGame(matrix);
-    placeElement();
+    return matrix;
+}
+
+function initMissions(){
+    let i = 0;
+    missions.forEach((mission) => {
+        mission.querySelector('.title').textContent = selectedMissions[i].title;
+        mission.querySelector('.description').textContent = selectedMissions[i].description;
+        mission.querySelector('.missionScore').textContent = selectedMissions[i].score + ' pont';
+        i++;
+    });
+}
+
+function setActiveMissions(currentSeason){
+    missions.forEach((mission) => {
+        mission.classList.remove('activeMission');
+    });
+    if(currentSeason == 'Tavasz (AB)'){
+        missions[0].classList.add('activeMission');
+        missions[1].classList.add('activeMission');
+    } else if(currentSeason == 'Nyár (BC)'){
+        missions[1].classList.add('activeMission');
+        missions[2].classList.add('activeMission');
+    } else if(currentSeason == 'Ősz (CD)'){
+        missions[2].classList.add('activeMission');
+        missions[3].classList.add('activeMission');
+    } else if(currentSeason == 'Tél (DA)'){
+        missions[3].classList.add('activeMission');
+        missions[0].classList.add('activeMission');
+    }
 }
 
 function initGame(matrix){
@@ -108,8 +169,6 @@ function initNextElement(){
         color = 'blue';
     } else if (randomElement.type === 'town') {
         color = 'red';
-    } else {
-        color = 'white';
     }
 
     let table = document.createElement('table');
@@ -136,6 +195,14 @@ function nextElement() {
     document.querySelector('#timeCost').innerHTML = 'Időigény: ' + randomElement.time;
 }
 
+function setScores(){
+    score = 0;
+    springScore = 0;
+    summerScore = 0;
+    fallScore = 0;
+    winterScore = 0;
+}
+
 turnButton.addEventListener('click', () => {
     for(let i = 0; i < 3/2; i++){
         for (let j = i; j < 3 - i - 1; j++){
@@ -156,18 +223,18 @@ mirrorButton.addEventListener('click', () => {
 
 function delegate(parent, type, selector, handler) {
     function delegatedFunction(event) {
-      const handlerElement = this;
-      const sourceElement = event.target;
-    
-      const closestElement = 
-        sourceElement.closest(selector);
-    
-      if (handlerElement.contains(closestElement)) {
-        const targetElement = closestElement;
-        handler.call(targetElement, event);
-      }
+        const handlerElement = this;
+        const sourceElement = event.target;
+
+        const closestElement =
+            sourceElement.closest(selector);
+
+        if (handlerElement.contains(closestElement)) {
+            const targetElement = closestElement;
+            handler.call(targetElement, event);
+        }
     }
-    
+
     parent.addEventListener(type, delegatedFunction);
 }
 
@@ -188,8 +255,6 @@ function placeElement() {
     delegate(gamefield, 'mouseout', 'td', handleMouseOut)
 }
 
-let entered = false;
-let canPlace;
 function handleMouseOver(event){
     if(!entered && running){
         entered = true;
@@ -256,8 +321,10 @@ function handleClick() {
         entered = false;
         matrix = JSON.parse(JSON.stringify(tempMatrix));
         timer += randomElement.time;
+        console.log(timer);
         initGame(matrix);
         setSeason();
+        nextElement();
         checkEnd();
     }
 }
@@ -268,40 +335,53 @@ function setSeason(){
     if(currentSeason.textContent != 'Jelenlegi évszak: ' + seasons[currentSeasonIndex]){
         if(currentSeasonIndex == 1){
             springScore += calculateBasic(matrix, selectedMissions[0].title);
+            selectedMissions[0].score += calculateBasic(matrix, selectedMissions[0].title);
             springScore += calculateBasic(matrix, selectedMissions[1].title);
+            selectedMissions[1].score += calculateBasic(matrix, selectedMissions[1].title);
             score += springScore
             document.querySelector('#spring').innerHTML = 'Tavasz:<br>' + springScore + " pont";
         }
         else if(currentSeasonIndex == 2){
             summerScore += calculateBasic(matrix, selectedMissions[1].title);
+            selectedMissions[1].score += calculateBasic(matrix, selectedMissions[1].title);
             summerScore += calculateBasic(matrix, selectedMissions[2].title);
+            selectedMissions[2].score += calculateBasic(matrix, selectedMissions[2].title);
             score += summerScore
             document.querySelector('#summer').innerHTML = 'Nyár:<br>' + summerScore + " pont";
         }
         else if(currentSeasonIndex == 3){
             fallScore += calculateBasic(matrix, selectedMissions[2].title);
+            selectedMissions[2].score += calculateBasic(matrix, selectedMissions[2].title);
             fallScore += calculateBasic(matrix, selectedMissions[3].title);
+            selectedMissions[3].score += calculateBasic(matrix, selectedMissions[3].title);
             score += fallScore
             document.querySelector('#fall').innerHTML = 'Ősz:<br>' + fallScore + " pont";
         }
         else if(currentSeasonIndex == 0){
             winterScore += calculateBasic(matrix, selectedMissions[3].title);
+            selectedMissions[3].score += calculateBasic(matrix, selectedMissions[3].title);
             winterScore += calculateBasic(matrix, selectedMissions[0].title);
+            selectedMissions[0].score += calculateBasic(matrix, selectedMissions[0].title);
             score += winterScore
             document.querySelector('#winter').innerHTML = 'Tél:<br>' + winterScore + " pont";
         }
+        setActiveMissions(seasons[currentSeasonIndex]);
         currentSeason.textContent = 'Jelenlegi évszak: ' + seasons[currentSeasonIndex];
         document.querySelector('#score').innerHTML = 'Összesen: ' + score + ' pont';
     }
 
     let remainingTime = 7 - (timer % 7);
     seasonTimer.textContent = `Évszakból hátralévő idő: ${remainingTime}/7`;
+
+    let i = 0;
+    missions.forEach((mission) => {
+        mission.querySelector('.missionScore').textContent = selectedMissions[i].score + ' pont';
+        i++;
+    });
 }
 
 function checkEnd(){
     if(timer >= 28){
-        const cells = gamefield.querySelectorAll('td');
-        const cellsArray = Array.from(cells);
         for(let i = 0; i < cellsArray.length; i++){
             cells[i].style.cursor = 'default';
         }
@@ -310,12 +390,9 @@ function checkEnd(){
         running = false;
 
         restartButton.addEventListener('click', () => {
-            location.reload();
+            start();
         })
-    } else {
-        nextElement();
     }
 }
 
-
-start(matrix);
+start();
