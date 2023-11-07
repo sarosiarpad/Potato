@@ -15,30 +15,35 @@ body{
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 #gamefield{
-    border: 8px solid white;
     border-radius: 5px;
+    background-color: rgb(255, 255, 255);
 }
 #gamefield td{
     width: 4rem;
     height: 4rem;
-    background-color: rgb(247, 223, 147);
-    border-radius: 5px;
     cursor: pointer;
+}
+#gamefield img{
+    width: 4rem;
+    height: 4rem;
+    margin: auto;
 }
 
 .hideEndGame {
     display: none;
 }
 .showEndGame{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     position: absolute;
     top: 50%;
     left: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     transform: translate(-50%, -50%);
     background-color: black;
     border-radius: 10px;
@@ -122,34 +127,29 @@ body{
     flex-direction: column;
     width: 20rem;
     height: 7rem;
-    background-color: rgb(31, 30, 30);
-    border-radius: 10px;
+    background-size: 100% auto;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 15px;
     justify-content: space-evenly;
-}
-.mission .title{
-    color: white;
-    font-size: 1.2rem;
-    margin: 0px;
-    margin-left: 5px;
-}
-.mission .description{
-    color: white;
-    font-size: 0.8rem;
-    margin: 0px;
-    margin-left: 5px;
 }
 .mission .missionScore{
     color: white;
-    font-size: 1rem;
-    margin: 0px;
+    font-size: 0.8rem;
+    margin-left: auto;
+    margin-top: auto;
     margin-right: 5px;
-    align-self: flex-end;
+    margin-bottom: 5px;
 }
 .activeMission{
-    border: 5px solid rgb(19, 206, 19);
+    box-shadow: inset 0 0 20px rgba(44, 216, 21, 0.4);
 }
 
 #element td{
+    width: 4rem;
+    height: 4rem;
+}
+#element td img{
     width: 4rem;
     height: 4rem;
 }
@@ -176,6 +176,10 @@ body{
     align-self: flex-end;
     margin-top: 10px;
     margin-right: 10px;
+}
+#timeCost img{
+    height: 1rem;
+    width: 1rem;
 }
 #nextElementTable #element{
     align-self: center;
@@ -206,7 +210,15 @@ button{
         width: 3rem;
         height: 3rem;
     }
+    #gamefield img{
+        width: 3rem;
+        height: 3rem;
+    }
     #element td{
+        width: 3rem;
+        height: 3rem;
+    }
+    #element img{
         width: 3rem;
         height: 3rem;
     }
@@ -256,6 +268,14 @@ button{
         height: 2rem;
     }
     #element td{
+        width: 2rem;
+        height: 2rem;
+    }
+    #gamefield img{
+        width: 2rem;
+        height: 2rem;
+    }
+    #element img{
         width: 2rem;
         height: 2rem;
     }

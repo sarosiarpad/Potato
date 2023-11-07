@@ -1,6 +1,6 @@
 import {missionsData} from './datas.js';
 
-export function calculateBasic(matrix, title){
+export function calculateMission(matrix, title){
     let seasonScore = 0;
     if(title == "Az erdő széle"){
         for(let i = 0; i < 11; i++){
@@ -10,9 +10,7 @@ export function calculateBasic(matrix, title){
                 }
             }
         }
-        return seasonScore;
-    }
-    else if(title == "Álmos-völgy"){
+    }else if(title == "Álmos-völgy"){
         for(let i = 0; i < 11; i++){
             let counter = 0;
             for(let j = 0; j < 11; j++){
@@ -24,9 +22,7 @@ export function calculateBasic(matrix, title){
                 seasonScore += 4;
             }
         }
-        return seasonScore;
-    }
-    else if(title == "Krumpliöntözés"){
+    }else if(title == "Krumpliöntözés"){
         const neighbor = [[-1, 0], [1, 0], [0, -1], [0, 1]];
         for(let i = 0; i < 11; i++){
             for(let j = 1; j < 10; j++){
@@ -43,9 +39,7 @@ export function calculateBasic(matrix, title){
                 }
             }
         }
-        return seasonScore;
-    }
-    else if(title = "Határvidék"){
+    }else if(title = "Határvidék"){
         for(let i = 0; i < 11; i++){
             let isFullColumn = true;
             let isFullRow = true;
@@ -64,13 +58,7 @@ export function calculateBasic(matrix, title){
                 seasonScore += 6;
             }
         }
-        return seasonScore;
-    }
-}
-
-/*
-function calculateExtra(matrix, title){
-    if(title = "Fasor"){
+    }else if(title = "Fasor"){
         let max = 0;
         for(let i = 0; i < 11; i++){
             let forest = false;
@@ -89,18 +77,73 @@ function calculateExtra(matrix, title){
                 }
             }
         }
-        score += max*2;
-    }
-    else if(title = "Gazdag város"){
-        const neighbor = [[-1, 1], [0, 1], [1, 1], [0, -1], [0, 1], [-1, -1], [-1, 0], [-1, 1]];
-        for(let i = 1; i < 10; i++){
-            for(let j = 1; j < 10; j++){
-                if(matrix[i][j] == 5){
-                    let isTown = true;
-                    while()
+        seasonScores += max * 2;
+    }else if(title == "Öntözőcsatorna"){
+        for(let i = 0; i < 11; i++){
+            for(let j = 0; j < 11; j++){
+                let farms = 0;
+                let waters = 0;
+                if(matrix[j][i] == 2){
+                    farms++;
+                }else if(matrix[j][i] == 4){
+                    waters++;
+                }
+            }
+            if(farms > 0 && farms == waters){
+                seasonScore += 4;
+            }
+        }
+    }else if(title == "Mágusok völgye"){
+        const neighbor = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        for(let i = 0; i < 11; i++){
+            for(let j = 0; j < 11; j++){
+                if(matrix[i][j] == 1){
+                    neighbor.forEach((coord) => {
+                        if(maatrix[i + coord[0]][j+coord[1]] == 4){
+                            seasonScore += 3;
+                        }
+                    })
                 }
             }
         }
+    }else if(title == "Üres telek"){
+        const neighbor = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        for(let i = 0; i < 11; i++){
+            for(let j = 0; j < 11; j++){
+                if(matrix[i][j] == 5){
+                    neighbor.forEach((coord) => {
+                        if(maatrix[i + coord[0]][j+coord[1]] == 0){
+                            seasonScore += 2;
+                        }
+                    })
+                }
+            }
+        }
+    }else if("Páratlan silók"){
+        let full = true
+        matrix.forEach((row) => {
+            row.forEach((cell) => {
+                if(cell == 0){
+                    full = false;
+                }
+            });
+            if(full){
+                seasonScore += 10;
+            }
+        });
+    }else if("Gazdag vidék"){
+        let tiles = [];
+        matrix.forEach((row) => {
+            row.forEach((cell) => {
+                if(!tiles.includes(cell)){
+                    tiles.push(cell);
+                }
+            });
+            if(tiles.length == 5){
+                seasonScore += 4;
+            }
+        });
     }
+
+    return seasonScore;
 }
-*/

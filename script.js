@@ -1,5 +1,5 @@
 import { missionsData, elements } from './datas.js';
-import { calculateBasic } from './missions.js';
+import { calculateMission } from './missions.js';
 
 /*
     üres = 0
@@ -29,9 +29,19 @@ const missions = document.querySelectorAll('.mission');
 const mountains = [[2,2], [4,9], [6,4], [9,10], [10,6]];
 const seasons = ['Tavasz (AB)', 'Nyár (BC)', 'Ősz (CD)', 'Tél (DA)'];
 
+const tiles = [
+    '<img src="tiles/base_tile.png">',
+    '<img src="tiles/mountain_tile.png">',
+    '<img src="tiles/plains_tile.png">',
+    '<img src="tiles/forest_tile.png">',
+    '<img src="tiles/water_tile.png">',
+    '<img src="tiles/village_tile.png">',
+]
+
 let matrix = [];
 let tempMatrix = [];
 let selectedMissions = [];
+let usedElements = [];
 
 let randomElement;
 let timer;
@@ -57,9 +67,28 @@ function start(){
     endGameDiv.classList.remove('showEndGame');
     endGameDiv.classList.add('hideEndGame');
 
-    missionsData.basic.forEach((mission) => {
-        selectedMissions.push(mission);
-    });
+    for (let i = 0; i < 4; i++) {
+        let randType = Math.floor(Math.random() * 2);
+        if (randType == 0) {
+            let added = false;
+            while (!added) {
+                let randMission = Math.floor(Math.random() * missionsData.basic.length);
+                if (!selectedMissions.includes(missionsData.basic[randMission])) {
+                    selectedMissions.push(missionsData.basic[randMission]);
+                    added = true;
+                }
+            }
+        }else{
+            let added = false;
+            while (!added) {
+                let randMission = Math.floor(Math.random() * missionsData.extra.length);
+                if (!selectedMissions.includes(missionsData.extra[randMission])) {
+                    selectedMissions.push(missionsData.extra[randMission]);
+                    added = true;
+                }
+            }
+        }
+    }
     
     matrix = initMatrix();
     tempMatrix = [];
@@ -69,7 +98,7 @@ function start(){
 
     timer = 0;
     let remainingTime = 7- (timer % 7);
-    seasonTimer.textContent = `Évszakból hátralévő idő: ${remainingTime}/7`;
+    seasonTimer.innerHTML = `Évszakból hátralévő idő: ${remainingTime}/7`;
 
     nextElement();
 
@@ -99,8 +128,7 @@ function initMatrix(){
 function initMissions(){
     let i = 0;
     missions.forEach((mission) => {
-        mission.querySelector('.title').textContent = selectedMissions[i].title;
-        mission.querySelector('.description').textContent = selectedMissions[i].description;
+        mission.style.backgroundImage = `url(${selectedMissions[i].img})`;
         mission.querySelector('.missionScore').textContent = selectedMissions[i].score + ' pont';
         i++;
     });
@@ -134,23 +162,25 @@ function initGame(matrix){
         let tr = table.insertRow();
         row.forEach(cell => {
             let td = tr.insertCell();
-            if(cell == 1){
-                td.style.backgroundColor = 'rgb(129, 68, 0)';
-            }
-            else if(cell == 2){
-                td.style.backgroundColor = 'yellow';
-            }
-            else if(cell == 3){
-                td.style.backgroundColor = 'green';
-            }
-            else if(cell == 4){
-                td.style.backgroundColor = 'blue';
-            }
-            else if(cell == 5){
-                td.style.backgroundColor = 'red';
-            }
-            else{
-                td.style.backgroundColor = 'rgb(247, 223, 147)';
+            switch(cell){
+                case 0:
+                    td.innerHTML = tiles[0];
+                    break;
+                case 1:
+                    td.innerHTML = tiles[1];
+                    break; 
+                case 2:
+                    td.innerHTML = tiles[2];
+                    break; 
+                case 3:
+                    td.innerHTML = tiles[3];
+                    break; 
+                case 4:
+                    td.innerHTML = tiles[4];
+                    break; 
+                case 5:
+                    td.innerHTML = tiles[5];
+                    break; 
             }
         });
     });
@@ -160,15 +190,15 @@ function initGame(matrix){
 function initNextElement(){
     nextElementTable.innerHTML = '';
 
-    let color;
+    let tile;
     if (randomElement.type === 'farm') {
-        color = 'yellow';
+        tile = tiles[2];
     } else if (randomElement.type === 'forest') {
-        color = 'green';
+        tile = tiles[3];
     } else if (randomElement.type === 'water') {
-        color = 'blue';
+        tile = tiles[4];
     } else if (randomElement.type === 'town') {
-        color = 'red';
+        tile = tiles[5];
     }
 
     let table = document.createElement('table');
@@ -178,7 +208,7 @@ function initNextElement(){
         row.forEach(cell => {
             let td = tr.insertCell();
             if (cell != 0) {
-                td.style.backgroundColor = color;
+                td.innerHTML = tile;
             }
         });
     });
@@ -186,13 +216,23 @@ function initNextElement(){
 }
 
 function getNextElement(){
-    return elements[Math.floor(Math.random() * elements.length)];
+    if(elements.length == 0){
+        return usedElements[Math.floor(Math.random() * usedElements.length)];
+    }
+    let randIndex = Math.floor(Math.random() * elements.length)
+    if(!usedElements.includes(elements[randIndex])){
+        usedElements.push(elements[randIndex]);
+        elements.splice(randIndex, 1);
+        return usedElements[usedElements.length-1];
+    }else{
+        return getNextElement();
+    }
 }
 
 function nextElement() {
     randomElement = getNextElement();
     initNextElement();
-    document.querySelector('#timeCost').innerHTML = 'Időigény: ' + randomElement.time;
+    document.querySelector('#timeCost').innerHTML = '<img src="clock.webp"> ' + randomElement.time;
 }
 
 function setScores(){
@@ -250,7 +290,7 @@ function validate(x, y, matrix){
 }
 
 function placeElement() {
-    delegate(gamefield, 'mouseover', 'td', handleMouseOver);
+    delegate(gamefield, 'mouseover', 'img', handleMouseOver);
     delegate(gamefield, 'click', 'td', handleClick);
     delegate(gamefield, 'mouseout', 'td', handleMouseOut)
 }
@@ -259,8 +299,8 @@ function handleMouseOver(event){
     if(!entered && running){
         entered = true;
         canPlace = true;
-        let row = event.target.parentNode.rowIndex;
-        let column = event.target.cellIndex;
+        let row = event.target.parentNode.parentNode.rowIndex;
+        let column = event.target.parentNode.cellIndex;
     
         for (let i = 0; i < 3; i++) {
             for (let j = 0; j < 3; j++) {
@@ -334,34 +374,34 @@ function setSeason(){
     let currentSeasonIndex = Math.floor(timer / 7) % 4;
     if(currentSeason.textContent != 'Jelenlegi évszak: ' + seasons[currentSeasonIndex]){
         if(currentSeasonIndex == 1){
-            springScore += calculateBasic(matrix, selectedMissions[0].title);
-            selectedMissions[0].score += calculateBasic(matrix, selectedMissions[0].title);
-            springScore += calculateBasic(matrix, selectedMissions[1].title);
-            selectedMissions[1].score += calculateBasic(matrix, selectedMissions[1].title);
+            springScore += calculateMission(matrix, selectedMissions[0].title);
+            selectedMissions[0].score += calculateMission(matrix, selectedMissions[0].title);
+            springScore += calculateMission(matrix, selectedMissions[1].title);
+            selectedMissions[1].score += calculateMission(matrix, selectedMissions[1].title);
             score += springScore
             document.querySelector('#spring').innerHTML = 'Tavasz:<br>' + springScore + " pont";
         }
         else if(currentSeasonIndex == 2){
-            summerScore += calculateBasic(matrix, selectedMissions[1].title);
-            selectedMissions[1].score += calculateBasic(matrix, selectedMissions[1].title);
-            summerScore += calculateBasic(matrix, selectedMissions[2].title);
-            selectedMissions[2].score += calculateBasic(matrix, selectedMissions[2].title);
+            summerScore += calculateMission(matrix, selectedMissions[1].title);
+            selectedMissions[1].score += calculateMission(matrix, selectedMissions[1].title);
+            summerScore += calculateMission(matrix, selectedMissions[2].title);
+            selectedMissions[2].score += calculateMission(matrix, selectedMissions[2].title);
             score += summerScore
             document.querySelector('#summer').innerHTML = 'Nyár:<br>' + summerScore + " pont";
         }
         else if(currentSeasonIndex == 3){
-            fallScore += calculateBasic(matrix, selectedMissions[2].title);
-            selectedMissions[2].score += calculateBasic(matrix, selectedMissions[2].title);
-            fallScore += calculateBasic(matrix, selectedMissions[3].title);
-            selectedMissions[3].score += calculateBasic(matrix, selectedMissions[3].title);
+            fallScore += calculateMission(matrix, selectedMissions[2].title);
+            selectedMissions[2].score += calculateMission(matrix, selectedMissions[2].title);
+            fallScore += calculateMission(matrix, selectedMissions[3].title);
+            selectedMissions[3].score += calculateMission(matrix, selectedMissions[3].title);
             score += fallScore
             document.querySelector('#fall').innerHTML = 'Ősz:<br>' + fallScore + " pont";
         }
         else if(currentSeasonIndex == 0){
-            winterScore += calculateBasic(matrix, selectedMissions[3].title);
-            selectedMissions[3].score += calculateBasic(matrix, selectedMissions[3].title);
-            winterScore += calculateBasic(matrix, selectedMissions[0].title);
-            selectedMissions[0].score += calculateBasic(matrix, selectedMissions[0].title);
+            winterScore += calculateMission(matrix, selectedMissions[3].title);
+            selectedMissions[3].score += calculateMission(matrix, selectedMissions[3].title);
+            winterScore += calculateMission(matrix, selectedMissions[0].title);
+            selectedMissions[0].score += calculateMission(matrix, selectedMissions[0].title);
             score += winterScore
             document.querySelector('#winter').innerHTML = 'Tél:<br>' + winterScore + " pont";
         }
