@@ -60,9 +60,6 @@ function start(){
     running = true;
     setScores();
 
-    for(let i = 0; i < cellsArray.length; i++){
-        cells[i].style.cursor = 'pointer';
-    }
     gamefield.style.filter = 'blur(0px)';
     endGameDiv.classList.remove('showEndGame');
     endGameDiv.classList.add('hideEndGame');
@@ -90,6 +87,7 @@ function start(){
         }
     }
     
+    matrix = [];
     matrix = initMatrix();
     tempMatrix = [];
     initMissions();
@@ -117,7 +115,7 @@ function initSeasons(){
 }
 
 function initMatrix(){
-    let matrix = new Array(11).fill(0).map(() => new Array(11).fill(0));
+    matrix = new Array(11).fill(0).map(() => new Array(11).fill(0));
     mountains.forEach((coord) => {
         matrix[coord[0]-1][coord[1]-1] = 1;
     })
@@ -361,7 +359,6 @@ function handleClick() {
         entered = false;
         matrix = JSON.parse(JSON.stringify(tempMatrix));
         timer += randomElement.time;
-        console.log(timer);
         initGame(matrix);
         setSeason();
         nextElement();
@@ -422,9 +419,6 @@ function setSeason(){
 
 function checkEnd(){
     if(timer >= 28){
-        for(let i = 0; i < cellsArray.length; i++){
-            cells[i].style.cursor = 'default';
-        }
         gamefield.style.filter = 'blur(10px)';
         endGameDiv.classList.add('showEndGame');
         running = false;
